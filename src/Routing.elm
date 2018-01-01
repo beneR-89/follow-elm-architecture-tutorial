@@ -4,7 +4,6 @@ import Navigation exposing (Location)
 import Models exposing (PlayerId, Route(..))
 import UrlParser exposing (..)
 
-
 matchers : Parser (Route -> a) a
 matchers =
   oneOf
@@ -20,3 +19,10 @@ parseLocation location =
       route
     Nothing ->
       NotFoundRoute
+
+playersPath : String
+playersPath = "#players"
+
+playerPath : PlayerId -> String
+playerPath playerId =
+  "#players/" ++ playerId
