@@ -60,3 +60,37 @@ playerEncoder player =
       ]
   in
     Encode.object attributes
+
+createPlayerRequest : Player -> Http.Request Player
+createPlayerRequest player =
+  Http.request
+    { body = playerEncoder player |> Http.jsonBody
+    , expect = Http.expectJson playerDecoder
+    , headers = []
+    , method = "POST"
+    , timeout = Nothing
+    , url = "http://localhost:4000/players"
+    , withCredentials = False
+    }
+
+createPlayerCmd : Player -> Cmd Msg
+createPlayerCmd player =
+  createPlayerRequest player
+    |> Http.send Msgs.OnPlayerCreated
+
+deletePlayerRequest : PlayerId -> Http.Request PlayerId
+deletePlayerRequest id =
+  Http.request
+    { body = Http.emptyBody
+    , expect = Http.expectStringResponse (\response -> Ok id)
+    , headers = []
+    , method = "DELETE"
+    , timeout = Nothing
+    , url = "http://localhost:4000/players/" ++ id
+    , withCredentials = False
+    }
+
+deletePlayerCmd : PlayerId -> Cmd Msg
+deletePlayerCmd id =
+  deletePlayerRequest id
+    |> Http.send Msgs.OnPlayerDeleted

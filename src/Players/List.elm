@@ -2,10 +2,11 @@ module Players.List exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (class, href)
+import Html.Events exposing (onClick)
 import Msgs exposing (Msg)
 import Models exposing (Player)
 import RemoteData exposing (WebData)
-import Routing exposing (playerPath)
+import Routing exposing (playerPath, createPlayerPath)
 
 view : WebData (List Player) -> Html Msg
 view response =
@@ -15,8 +16,11 @@ view response =
 
 nav : Html Msg
 nav =
-  div [ class "clearfix mb2 white bg-black" ]
-    [ div [ class "left p2" ] [text "Players"] ]
+  div [ class "flex mb2 white bg-black items-center" ]
+    [ div [ class "flex-auto m1 h1 ml2" ] [text "Players"]
+    , a [ class "btn regular m1", href createPlayerPath ]
+        [ i [ class "fa fa-plus-square-o fa-2x" ] [] ]
+    ]
 
 maybeList : WebData (List Player) -> Html Msg
 maybeList response =
@@ -55,7 +59,7 @@ playerRow player =
     [ td [] [ text player.id ]
     , td [] [ text player.name ]
     , td [] [ text (toString player.level) ]
-    , td [] [ editButton player ]
+    , td [] [ editButton player, deleteButton player ]
     ]
 
 editButton : Player -> Html Msg
@@ -65,3 +69,11 @@ editButton player =
   in
     a [ class "btn regular", href path ]
       [ i [ class "fa fa-pencil mr1" ] [], text "Edit" ]
+
+deleteButton : Player -> Html Msg
+deleteButton player =
+  let
+    message = Msgs.OnDeletePlayer player.id
+  in
+    a [ class "btn regular", onClick message ]
+      [ i [ class "fa fa-trash mr1" ] [], text "Delete" ]

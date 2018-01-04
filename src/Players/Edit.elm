@@ -16,7 +16,7 @@ view player =
 
 nav : Player -> Html Msg
 nav player =
-  div [ class "clearfix mb2 white bg-black p1" ]
+  div [ class "flex mb2 white bg-black items-center" ]
     [ listButton ]
 
 form : Player -> Html Msg
@@ -55,5 +55,5 @@ btnLevelIncrease player =
 
 listButton : Html Msg
 listButton =
-  a [ class "btn regular", href playersPath ]
+  a [ class "btn regular m1 h1", href playersPath ]
     [ i [ class "fa fa-chevron-left mr1" ] [], text "List" ]

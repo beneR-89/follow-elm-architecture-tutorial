@@ -3,7 +3,7 @@ module Update exposing (..)
 import Msgs exposing (Msg(..))
 import Models exposing (Model, Player)
 import Routing exposing (parseLocation)
-import Commands exposing (savePlayerCmd)
+import Commands exposing (savePlayerCmd, fetchPlayers, createPlayerCmd, deletePlayerCmd)
 import RemoteData
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -25,6 +25,30 @@ update msg model =
       ( updatePlayer model player, Cmd.none )
     Msgs.OnPlayerSave (Err error) ->
       ( model, Cmd.none )
+    Msgs.OnUpdateFuturePlayerName name ->
+      let
+        level = model.playerToBeCreated.level
+        player = Player "" name level
+      in
+        ( { model | playerToBeCreated = player }, Cmd.none )
+    Msgs.OnUpdateFuturePlayerLevel level ->
+      let
+        name = model.playerToBeCreated.name
+        player = Player "" name (parseLevel level)
+      in
+        ( { model | playerToBeCreated = player }, Cmd.none )
+    Msgs.OnCreatePlayer player ->
+      ( model, createPlayerCmd player )
+    Msgs.OnPlayerCreated (Ok player) ->
+      ( { model | playerToBeCreated = Player "" "" -1 }, fetchPlayers )
+    Msgs.OnPlayerCreated (Err error) ->
+      ( { model | playerToBeCreated = Player "" "" -1 }, Cmd.none )
+    Msgs.OnDeletePlayer id ->
+      ( model, deletePlayerCmd id )
+    Msgs.OnPlayerDeleted (Ok id) ->
+      ( model, fetchPlayers )
+    Msgs.OnPlayerDeleted (Err err) ->
+      ( model, Cmd.none )
 
 updatePlayer : Model -> Player -> Model
 updatePlayer model updatedPlayer =
@@ -42,3 +66,7 @@ updatePlayer model updatedPlayer =
     updatedPlayers = RemoteData.map updatePlayerList model.players
   in
     { model | players = updatedPlayers }
+
+parseLevel : String -> Int
+parseLevel levelStr =
+  Result.withDefault 0 (String.toInt levelStr)

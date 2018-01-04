@@ -8,6 +8,7 @@ matchers : Parser (Route -> a) a
 matchers =
   oneOf
     [ map PlayersRoute top
+    , map CreatePlayerRoute (s "players" </> s "create")
     , map PlayerRoute (s "players" </> string)
     , map PlayersRoute (s "players")
     ]
@@ -26,3 +27,6 @@ playersPath = "#players"
 playerPath : PlayerId -> String
 playerPath playerId =
   "#players/" ++ playerId
+
+createPlayerPath : String
+createPlayerPath = "#players/create"
